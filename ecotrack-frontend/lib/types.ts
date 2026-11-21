@@ -1,98 +1,78 @@
-export type WasteCategory = 'General' | 'Recyclable' | 'Organic' | 'Hazardous' | 'E-Waste'
-
 export type BinStatus = 'normal' | 'moderate' | 'almost-full' | 'full'
+export type WasteCategory = string
+export type AlertSeverity = 'warning' | 'high' | 'critical'
+export type ComplaintStatus = 'submitted' | 'under-review' | 'assigned' | 'resolved'
+export type VehicleStatus = 'available' | 'on-route' | 'maintenance'
+export type RouteStatus = 'scheduled' | 'in-progress' | 'completed'
+export type Role = 'admin' | 'citizen'
 
-export interface Area {
-  id: string
-  name: string
-  lat: number
-  lng: number
-  population: number
-}
+export type ComplaintCategory =
+  | 'Overflowing Garbage Bin'
+  | 'Irregular Garbage Collection'
+  | 'Illegal Garbage Dumping'
+  | 'Damaged Garbage Bin'
+  | 'Uncollected Waste'
+  | 'Other'
 
-export interface Bin {
+export interface SmartBin {
   id: string
+  latitude: number
+  longitude: number
   location: string
   area: string
-  lat: number
-  lng: number
   fillLevel: number
-  category: WasteCategory
-  capacityLiters: number
+  wasteCategory: WasteCategory
+  status: BinStatus
   lastUpdated: string
-  lastCollected: string
-  sensorBattery: number
-  installedOn: string
+  /** Highest alert tier (0 = none, 1 warning, 2 high, 3 critical) already raised since the bin was last emptied. */
+  alertTier: number
 }
-
-export type AlertSeverity = 'warning' | 'high' | 'critical'
-export type AlertStatus = 'unread' | 'read' | 'resolved'
 
 export interface Alert {
   id: string
   binId: string
   location: string
-  area: string
-  fillLevel: number
   severity: AlertSeverity
-  status: AlertStatus
-  createdAt: string
-  updatedAt: string
+  fillLevel: number
+  timestamp: string
+  isRead: boolean
+  isResolved: boolean
   resolvedAt?: string
-  resolutionNote?: string
+  note?: string
 }
-
-export type ActivityType =
-  | 'alert-created'
-  | 'alert-escalated'
-  | 'alert-resolved'
-  | 'bin-reset'
-  | 'complaint-submitted'
-  | 'complaint-updated'
-  | 'route-optimized'
-  | 'route-progress'
-
-export interface ActivityEntry {
-  id: string
-  type: ActivityType
-  title: string
-  message: string
-  createdAt: string
-  channel: 'in-app'
-}
-
-export type VehicleStatus = 'available' | 'on-route' | 'maintenance'
 
 export interface Vehicle {
   id: string
-  name: string
-  plate: string
+  vehicleName: string
   driver: string
-  capacityKg: number
-  loadPct: number
+  latitude: number
+  longitude: number
+  depotLatitude: number
+  depotLongitude: number
   status: VehicleStatus
-  lat: number
-  lng: number
-  collectedTodayKg: number
-  tripsToday: number
+  capacityKg: number
+  assignedRoute: string | null
 }
 
-export type ComplaintCategory =
-  | 'Overflowing garbage bin'
-  | 'Irregular garbage collection'
-  | 'Illegal dumping'
-  | 'Damaged garbage bin'
-  | 'Other'
+export interface RouteStop {
+  binId: string
+  location: string
+  latitude: number
+  longitude: number
+  collected: boolean
+}
 
-export type ComplaintStatus = 'Submitted' | 'Under Review' | 'Assigned' | 'Resolved'
-
-export type LocationSource = 'pin' | 'search' | 'gps' | 'area'
-
-export interface PickedLocation {
-  lat: number
-  lng: number
-  address?: string
-  source: Exclude<LocationSource, 'area'>
+export interface CollectionRoute {
+  id: string
+  vehicleId: string
+  binIds: string[]
+  orderedStops: RouteStop[]
+  estimatedDistance: number
+  estimatedTime: number
+  baselineDistance: number
+  baselineTime: number
+  status: RouteStatus
+  createdAt: string
 }
 
 export interface ComplaintHistoryEntry {
@@ -103,94 +83,50 @@ export interface ComplaintHistoryEntry {
 
 export interface Complaint {
   id: string
-  name: string
+  citizenName: string
   contact: string
   category: ComplaintCategory
   description: string
-  area: string
+  image: string | null
+  latitude: number
+  longitude: number
   address: string
-  lat: number
-  lng: number
-  /** How the coordinates were captured. 'area' means approximated from the district centre. */
-  locationSource?: LocationSource
-  image?: string
   status: ComplaintStatus
-  assignedTo?: string
+  assignedTo: string | null
   createdAt: string
-  updatedAt: string
   history: ComplaintHistoryEntry[]
 }
 
-export interface Worker {
-  id: string
-  name: string
-  role: string
-  area: string
+export interface AlertThresholds {
+  warning: number
+  high: number
+  critical: number
 }
-
-export type RouteStatus = 'pending' | 'in-progress' | 'completed'
-
-export interface CollectionRoute {
-  id: string
-  vehicleId: string
-  color: string
-  stops: string[]
-  completedStops: number
-  distanceKm: number
-  durationMin: number
-  status: RouteStatus
-}
-
-export interface RoutePlan {
-  id: string
-  generatedAt: string
-  routes: CollectionRoute[]
-  totalDistanceKm: number
-  baselineDistanceKm: number
-  timeSavedMin: number
-  isSimulated: true
-}
-
-export type ThemePreference = 'light' | 'dark' | 'system'
 
 export interface Settings {
-  profile: {
-    name: string
-    email: string
-    phone: string
-    role: string
-    department: string
-  }
+  adminName: string
+  adminEmail: string
+  department: string
+  thresholds: AlertThresholds
+  wasteCategories: string[]
   notifications: {
     inApp: boolean
-    toasts: boolean
     criticalOnly: boolean
+    complaintUpdates: boolean
     dailyDigest: boolean
   }
-  thresholds: {
-    warning: number
-    high: number
-    critical: number
-    collection: number
-  }
-  system: {
-    autoSimulate: boolean
-    simulationIntervalSec: number
-    mapAutoFit: boolean
-  }
-  theme: ThemePreference
+  autoSimulate: boolean
+  simulationIntervalSec: number
+  theme: 'light' | 'dark'
 }
 
-export type Role = 'admin' | 'citizen'
-
-export interface AppState {
+export interface Database {
   version: number
-  bins: Bin[]
+  bins: SmartBin[]
   alerts: Alert[]
-  activity: ActivityEntry[]
   vehicles: Vehicle[]
+  routes: CollectionRoute[]
   complaints: Complaint[]
-  workers: Worker[]
-  routePlan: RoutePlan | null
   settings: Settings
+  collectedTodayKg: number
 }

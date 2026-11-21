@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
-import { ComplaintsView } from '@/components/eco/complaints/complaints-view'
+import { ComplaintsPage } from '@/components/complaints/complaints-page'
 
 export const metadata: Metadata = { title: 'Citizen Complaints' }
 
 export default function Page() {
   return (
     <Suspense>
-      <ComplaintsView />
+      <ComplaintsPage />
     </Suspense>
   )
 }

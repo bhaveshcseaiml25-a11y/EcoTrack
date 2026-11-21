@@ -1,5 +1,8 @@
-import { OverviewView } from '@/components/eco/overview/overview-view'
+import type { Metadata } from 'next'
+import { OverviewPage } from '@/components/overview/overview-page'
+
+export const metadata: Metadata = { title: 'Overview' }
 
 export default function Page() {
-  return <OverviewView />
+  return <OverviewPage />
 }

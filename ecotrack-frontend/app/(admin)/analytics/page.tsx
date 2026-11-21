@@ -1,13 +1,8 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { AnalyticsView } from '@/components/eco/analytics/analytics-view'
+import { AnalyticsPage } from '@/components/analytics/analytics-page'
 
 export const metadata: Metadata = { title: 'Analytics & Reports' }
 
 export default function Page() {
-  return (
-    <Suspense>
-      <AnalyticsView />
-    </Suspense>
-  )
+  return <AnalyticsPage />
 }

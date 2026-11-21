@@ -1,19 +1,22 @@
-import Link from 'next/link'
-import { Leaf } from 'lucide-react'
+import { Recycle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export function Logo({ compact, href = '/', tone = 'sidebar' }: { compact?: boolean; href?: string; tone?: 'sidebar' | 'default' }) {
+export function Logo({ collapsed, className, tone = 'light' }: { collapsed?: boolean; className?: string; tone?: 'light' | 'dark' }) {
   return (
-    <Link href={href} className="flex items-center gap-2.5 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
-      <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.72_0.13_175)] to-[oklch(0.55_0.12_195)] text-white shadow-sm">
-        <Leaf className="size-5" aria-hidden />
+    <div className={cn('flex items-center gap-2.5', className)}>
+      <span className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-700 text-white shadow-md shadow-teal-900/30">
+        <Recycle className="size-5" aria-hidden="true" />
       </span>
-      <span className={cn('flex flex-col leading-tight', compact && 'sr-only')}>
-        <span className={cn('text-base font-semibold tracking-tight', tone === 'sidebar' ? 'text-white' : 'text-foreground')}>EcoTrack</span>
-        <span className={cn('text-[11px]', tone === 'sidebar' ? 'text-sidebar-foreground/60' : 'text-muted-foreground')}>
-          Smart Waste Platform
-        </span>
-      </span>
-    </Link>
+      {!collapsed && (
+        <div className="min-w-0 leading-tight">
+          <p className={cn('text-base font-semibold tracking-tight', tone === 'light' ? 'text-white' : 'text-foreground')}>
+            Eco<span className="text-teal-400">Track</span>
+          </p>
+          <p className={cn('truncate text-[10px]', tone === 'light' ? 'text-sidebar-foreground/70' : 'text-muted-foreground')}>
+            Smarter Waste Management. Cleaner Cities.
+          </p>
+        </div>
+      )}
+    </div>
   )
 }

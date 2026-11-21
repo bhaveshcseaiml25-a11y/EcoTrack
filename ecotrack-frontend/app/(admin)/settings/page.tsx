@@ -1,13 +1,8 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import { SettingsView } from '@/components/eco/settings/settings-view'
+import { SettingsPage } from '@/components/settings/settings-page'
 
 export const metadata: Metadata = { title: 'Settings' }
 
 export default function Page() {
-  return (
-    <Suspense>
-      <SettingsView />
-    </Suspense>
-  )
+  return <SettingsPage />
 }
